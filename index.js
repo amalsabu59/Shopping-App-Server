@@ -1,4 +1,5 @@
 const express = require("express")
+const cors = require("cors")
 const app = express()
 const mongoose = require("mongoose")
 const dotenv = require("dotenv")
@@ -7,6 +8,7 @@ const authRoute = require("./routes/auth")
 const productsRoute = require("./routes/products")
 const cartRoute = require("./routes/cart")
 const orderRoute = require("./routes/orders")
+const stripeRoute = require("./routes/stripe")
 
 dotenv.config()
 
@@ -16,11 +18,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 app.use(express.json())
+app.use(cors())
 app.use("/api/auth",authRoute)
 app.use("/api/user",userRoute)
 app.use("/api/products",productsRoute)
 app.use("/api/carts",cartRoute)
 app.use("/api/orders",orderRoute)
+app.use("/api/checkout",stripeRoute)
 
 app.listen(process.env.PORT || 8800, ()=> {
     console.log("backend server is running !") 
