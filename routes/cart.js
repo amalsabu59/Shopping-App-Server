@@ -70,7 +70,6 @@ router.get("/:userid", async (req, res) => {
       let product = await products.find({
         _id: carts[0].products[i].ProductId,
       });
-      console.log(product[0]["title"]);
       productsArr.push({
         quantity: carts[0].products[i].quantity,
         _id: product[0]._id,
@@ -87,7 +86,15 @@ router.get("/:userid", async (req, res) => {
       });
     }
 
-    res.status(200).json(productsArr);
+    const totalPrice = productsArr.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.price * currentValue.quantity;
+    }, 0);
+
+    res.status(200).json({
+      products: productsArr,
+      totalPrice,
+      totalQuantity: productsArr.length,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
