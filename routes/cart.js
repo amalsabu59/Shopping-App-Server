@@ -1,4 +1,5 @@
 const Cart = require("../models/Cart");
+const products = require("../models/Products");
 const {
   verifyTokenAndAdmin,
   verifyToken,
@@ -8,10 +9,17 @@ const {
 const router = require("express").Router();
 
 router.post("/", verifyToken, async (req, res) => {
-  const newCart = new Cart(req.body);
   try {
-    const savedCart = await newCart.save();
-    res.status(200).json(savedCart);
+    const existingCart = await Cart.findOne({ userId: req.body.userId });
+    if (existingCart) {
+      existingCart.products = req.body.products;
+      const savedCart = await existingCart.save();
+      res.status(200).json(savedCart);
+    } else {
+      const newCart = new Cart(req.body);
+      const savedCart = await newCart.save();
+      res.status(200).json(savedCart);
+    }
   } catch (err) {
     res.status(500).json(err);
   }
@@ -53,12 +61,36 @@ router.get("/find/:id", verifyTokenAndAuthorization, async (req, res) => {
   }
 });
 
-router.get("/", verifyTokenAndAdmin, async (req, res) => {
+router.get("/:userid", async (req, res) => {
   try {
-    const carts = await Cart.find();
-    res.status(200).json(carts);
+    let productsArr = [];
+    const carts = await Cart.find({ userId: req.params.userid });
+    const cartLength = carts[0].products.length;
+    for (let i = 0; i < cartLength; i++) {
+      let product = await products.find({
+        _id: carts[0].products[i].ProductId,
+      });
+      console.log(product[0]["title"]);
+      productsArr.push({
+        quantity: carts[0].products[i].quantity,
+        _id: product[0]._id,
+        categories: product[0].categories,
+        size: product[0].size,
+        color: product[0].color,
+        inStock: product[0].inStock,
+        title: product[0].title,
+        image: product[0].image,
+        price: product[0].price,
+        rating: product[0].rating,
+        createdAt: product[0].createdAt,
+        updatedAt: product[0].updatedAt,
+      });
+    }
+
+    res.status(200).json(productsArr);
   } catch (err) {
-    req.status(500).json(err);
+    console.log(err);
+    res.status(500).json(err);
   }
 });
 
