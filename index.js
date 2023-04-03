@@ -15,7 +15,7 @@ dotenv.config();
 
 mongoose
   .connect(
-    "mongodb+srv://user:user@cluster0.n2e15.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://admin:aY6LwhGqZlvFm23e@cluster0.n2e15.mongodb.net/?retryWrites=true&w=majority"
   )
   .then(() => console.log("DB Connected Succesfully !"))
   .catch((err) => console.log(err));
