@@ -14,7 +14,9 @@ const paymentRoutes = require("./routes/razorpay");
 dotenv.config();
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(
+    "mongodb+srv://user:user@cluster0.n2e15.mongodb.net/?retryWrites=true&w=majority"
+  )
   .then(() => console.log("DB Connected Succesfully !"))
   .catch((err) => console.log(err));
 
